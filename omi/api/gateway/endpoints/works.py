@@ -10,6 +10,7 @@ log = logging.getLogger(__name__)
 ns = api.namespace('works', description='Operations related to musical works')
 mbz.set_useragent('omi', 1.0, 'omi@gmail.com')
 
+
 @ns.route('/<matrix(limit=128, offset=0):params>')
 class WorksCollection(Resource):
     """
@@ -25,8 +26,8 @@ class WorksCollection(Resource):
         limit = int(params['limit'])
         composer = args['composer']
         title = args['title']
-        results = mbz.search_works(query=title, limit=limit, offset=offset, strict=False,artist=composer)
-        print(results)
+        results = mbz.search_works(query=title, limit=limit, offset=offset, strict=False, artist=composer)
+        # print(results)
         return self.mbz_results_to_omi(offset, results)
 
     def mbz_results_to_omi(self, offset, results):
@@ -35,15 +36,15 @@ class WorksCollection(Resource):
             if type(x) is dict:
                 converted.append({
                     'title': x['title'],
-                    'composers': self.mbz_artist_relationships_to_omi(x['artist-relation-list'],'composer') if x.has_key('artist-relation-list') else [],
-                    'songwriters': self.mbz_artist_relationships_to_omi(x['artist-relation-list'],'lyricist') if x.has_key('artist-relation-list') else [],
-#                    'raw': x
+                    'composers': self.mbz_artist_relationships_to_omi(x['artist-relation-list'], 'composer') if 'artist-relation-list' in x else [],
+                    'songwriters': self.mbz_artist_relationships_to_omi(x['artist-relation-list'], 'lyricist') if 'artist-relation-list' in x else [],
+                    # 'raw': x
                 })
         return {
             'offset': offset,
             'count': len(converted),
             'total': results['work-count'],
-            'results': converted
+            'results': converted,
         }
 
     def mbz_artist_relationships_to_omi(self, artists, role):
@@ -53,7 +54,6 @@ class WorksCollection(Resource):
                 converted.append({
                     'name': x['artist']['name'],
                     'role': x['type'],
-                    'id': x['artist']['id']
+                    'id': x['artist']['id'],
                 })
         return converted
-

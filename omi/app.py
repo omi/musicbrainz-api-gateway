@@ -8,6 +8,7 @@ from omi.api.gateway.endpoints.works import ns as omi_works_namespace
 from omi.api.restplus import api
 from omi.database import db
 
+
 class MatrixConverter(BaseConverter):
     def __init__(self, url_map, **defaults):
         super(MatrixConverter, self).__init__(url_map)
@@ -19,7 +20,7 @@ class MatrixConverter(BaseConverter):
         value = value[1:]
         parts = value.split(';')
         result = self.defaults.copy()
-        for part in value.split(';'):
+        for part in parts:
             try:
                 key, value = part.split('=')
             except ValueError:
@@ -63,6 +64,7 @@ def main():
     initialize_app(app)
     log.info('>>>>> Starting development server at http://{}/api/ <<<<<'.format(app.config['SERVER_NAME']))
     app.run(debug=settings.FLASK_DEBUG)
+
 
 if __name__ == "__main__":
     main()
